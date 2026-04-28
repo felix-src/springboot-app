@@ -59,7 +59,7 @@
         </plugins>
     </build>
 
-    <!-- 🔥 THIS IS THE IMPORTANT PART FOR NEXUS -->
+    <!--THIS IS THE IMPORTANT PART FOR NEXUS -->
     <distributionManagement>
         <repository>
             <id>nexus</id>

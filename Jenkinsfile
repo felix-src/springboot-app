@@ -3,26 +3,33 @@ pipeline {
 
     stages {
 
-        stage('Build JAR (Maven Container)') {
+        stage('Checkout') {
             steps {
-                script {
-                    docker.image('maven:3.9.9-eclipse-temurin-17').inside {
-                        sh 'mvn -version'
-                        sh 'mvn clean package -DskipTests'
-                    }
-                }
+                git 'https://github.com/felix-src/springboot-app.git'
+            }
+        }
+
+        stage('Build JAR') {
+            steps {
+                sh 'mvn clean package -DskipTests'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t springboot-app .'
+                sh '''
+                eval $(minikube docker-env)
+                docker build -t springboot-app:latest .
+                '''
             }
         }
 
-        stage('Push to Nexus (Simulated)') {
+        stage('Deploy to Kubernetes') {
             steps {
-                echo 'Pushing to Nexus (simulation)'
+                sh '''
+                kubectl apply -f k8s/springboot-deployment.yaml
+                kubectl apply -f k8s/springboot-service.yaml
+                '''
             }
         }
     }
